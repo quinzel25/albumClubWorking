@@ -1,6 +1,7 @@
 <template>
-    <tr class="album-row" >
-        <td><img v-bind:src="albumObject.imgSrc" height="100" width="100"></td>
+<!--    boolean 'archive' dictates what shows on the list-->
+    <tr class="album-row" v-show="!albumObject.archive" >
+        <td><img v-bind:src="albumObject.imgURL" height="100" width="100"></td>
         <td>{{ albumObject.name }}</td>
         <td>{{ albumObject.artist}}</td>
         <td>{{ albumObject.suggester}}</td>
@@ -27,8 +28,12 @@
                 }
             },
             thisWeeksAlbum(albumObject) {
+                // unused variable but will useful for future features
+                let dateTime = Date();
+
                 if (confirm(`Make ${albumObject.name} this weeks album?`)) {
-                    this.$emit('current-album', albumObject)
+                    this.albumObject.archive = true
+                    this.$emit('current-album', albumObject, dateTime)
                 }
             }
         }

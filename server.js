@@ -3,7 +3,9 @@ let express = require('express')
 let request = require('request')
 let querystring = require('querystring')
 // end of test
-
+// FOR DB
+let bodyParser = require('body-parser')
+let api_routes = require('./routes/api.js')
 
 
 //app config
@@ -15,6 +17,12 @@ let server = app.listen(process.env.PORT || 3000, function () {
     console.log('Express server running on port', server.address().port)
 
 })
+
+// for db
+app.use(bodyParser.json())
+app.use('/api', api_routes)
+
+
 
 //testing for backend authentication
 // let redirect_uri =

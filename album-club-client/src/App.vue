@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 
-    <div class="jumbotron">
+    <div class="navbar navbar-dark bg-dark" id="nav">
       <h1>Matt Healy's Album Club</h1> <br>
 
       <div id="login-avatar">
@@ -15,14 +15,21 @@
           </div>
       </div>
     </div>
-<!--      TODO create one item list-->
-
+<!--    start of current album display-->
+      <br>
       <currentAlbum
                     v-bind:currentWeek="currentWeek"
       >
       </currentAlbum>
 
       <br><br>
+
+      <!--      addAlbum button/modal code-->
+      <addAlbum v-bind:authToken="authToken"
+                v-bind:suggester="suggester"
+                v-on:album-added="albumPush"
+      ></addAlbum>
+
 <!--start of album list card-->
       <albumTable
          v-bind:albumList="albumList"
@@ -31,12 +38,8 @@
       ></albumTable>
 
 
-      <br><br>
-<!--      addAlbum Elements TODO MAKE INTO MODAL-->
-      <addAlbum v-bind:authToken="authToken"
-                v-bind:suggester="suggester"
-                v-on:album-added="albumPush"
-                ></addAlbum>
+
+
   </div>
 </template>
 
@@ -61,8 +64,9 @@ export default {
             authToken: '',
             profilePicSrc: '',
             albumList: [],
-            currentWeek: {name: 'Error', artist: 'No album set as current album', imgSrc: '@/assets/matt.png'},
-            suggester: ''
+            currentWeek: {name: 'Uh oh!', artist: 'No album set as current album', imgURL: ''},
+            suggester: '',
+
         }
   },
   methods: {
@@ -97,16 +101,42 @@ export default {
           }
       },
       albumPush(albumObject) {
-          this.albumList.push(albumObject)
+          //adds album to album list/DB
+          this.$album_api.addAlbum(albumObject).then( album => {
+              this.updateAlbums()
+          }).catch(err => {
+              let msg = err.response.data.join(', ')
+              alert('Error adding album. \n' + msg)
+          })
       },
       albumDeleted(albumObject) {
-          //let name = this.albumObject.name
-          this.albumList.splice(this.albumList.indexOf(albumObject), 1)
+          // sends album to be DESTROYED
+          this.$album_api.deleteAlbum(albumObject.id).then( () => {
+              this.updateAlbums()
+          })
       },
       currentDisplay(albumObject) {
+          // update to change 'archive' boolean value
+          // if true the album will not appear in the albumList
+         //this calls the update table method below
+         this.updateTable(albumObject)
+
+          console.log(albumObject)
           this.currentWeek = albumObject
-          this.albumList.splice(this.albumList.indexOf(albumObject), 1)
-      }
+      },
+      updateAlbums() {
+          //retrieves data from DB and adds it to array here
+          this.$album_api.getAllAlbums().then( albums => {
+              this.albumList = albums
+          })
+      },
+      // sends object to services & api.js to preform update query
+      updateTable(albumObject) {
+          this.$album_api.updateAlbums(albumObject).then( albums => {
+              console.log(albums)
+          })
+      },
+
   },
   mounted() {
         this.token = window.location.hash.substr(1).split('&')[0].split("=")[1]
@@ -116,6 +146,9 @@ export default {
 
             window.opener.spotifyCallback(this.token)
         }
+
+        this.updateAlbums()
+
     }
 }
 </script>
@@ -127,8 +160,10 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   /*text-align: center;*/
   color: #2c3e50;
-    padding: 30px;
-    margin-top: 60px ;
+    /*padding-bottom: 30px;*/
+    /*padding-left: 30px;*/
+    /*padding-right: 30px;*/
+    /*margin-top: 60px ;*/
     background: #8A2387;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #F27121, #E94057, #8A2387);  /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, #F27121, #E94057, #8A2387); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -145,6 +180,12 @@ export default {
         text-align: right;
     }
     h1 {
-        text-align: center;
+        /*text-align: center;*/
     }
+    #nav {
+        color: azure;
+        background-color: #2c3e50;
+        padding: 20px;
+    }
+
 </style>

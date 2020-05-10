@@ -20,6 +20,7 @@
                     </tr>
 <!--                    albumRow-->
                     <albumRow
+
                         v-for="album in albumList"
                         v-bind:albumObject="album"
                         v-bind:edit="editTable"
@@ -65,6 +66,8 @@
 <style scoped>
  #album-list {
      padding: 20px;
+     margin-right: 50px;
+     margin-left: 50px;
  }
     h4  {
         text-align: center;
