@@ -59,12 +59,13 @@ export default {
         return {
             client_id: '488f284b803448b9a8284b0d43b5a3a0',
             scopes: 'user-top-read',
+            // TODO CHANGE THIS REDIRECT URI TO ACTUAL ADDRESS
             redirect_uri: 'http://localhost:8080/',
             me: null,
             authToken: '',
             profilePicSrc: '',
             albumList: [],
-            currentWeek: {name: 'Uh oh!', artist: 'No album set as current album', imgURL: ''},
+            currentWeek: [],
             suggester: '',
 
         }
@@ -121,8 +122,16 @@ export default {
          //this calls the update table method below
          this.updateTable(albumObject)
 
-          console.log(albumObject)
-          this.currentWeek = albumObject
+         this.loadDisplay()
+
+
+      },
+      loadDisplay() {
+          // this will pull the the current week album
+          this.$album_api.getCurrentAlbum().then( album => {
+
+              this.currentWeek = album
+          })
       },
       updateAlbums() {
           //retrieves data from DB and adds it to array here
@@ -133,7 +142,7 @@ export default {
       // sends object to services & api.js to preform update query
       updateTable(albumObject) {
           this.$album_api.updateAlbums(albumObject).then( albums => {
-              console.log(albums)
+
           })
       },
 
@@ -146,8 +155,10 @@ export default {
 
             window.opener.spotifyCallback(this.token)
         }
-
+        // when page loads will display albums
         this.updateAlbums()
+        // when page loads will display current album
+        this.loadDisplay()
 
     }
 }
@@ -158,12 +169,9 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /*text-align: center;*/
+
   color: #2c3e50;
-    /*padding-bottom: 30px;*/
-    /*padding-left: 30px;*/
-    /*padding-right: 30px;*/
-    /*margin-top: 60px ;*/
+
     background: #8A2387;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #F27121, #E94057, #8A2387);  /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, #F27121, #E94057, #8A2387); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -175,12 +183,8 @@ export default {
         background: linear-gradient(to right, #F27121, #E94057, #8A2387); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
     }
-
     #login-avatar {
         text-align: right;
-    }
-    h1 {
-        /*text-align: center;*/
     }
     #nav {
         color: azure;

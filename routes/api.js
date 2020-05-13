@@ -1,7 +1,6 @@
 let express = require('express')
 let db = require('../models')
 let Album = db.Album
-let Archive = db.Album
 //error handling
 let Sequelize = require('sequelize')
 
@@ -12,6 +11,29 @@ router.get('/albums', function (req,res,next) {
         return res.json(albums)
     }).catch(err => next(err) )
 })
+// grabbing the most current album
+// router.get('/albums/current', function (req,res,next) {
+//     Album.findOne({
+//         where: {archive: true} },
+//         { order: [['updatedAt']] ,
+//             limit: 1, })
+//         .then(
+//         album => {
+//             return res.json(album)
+//         }).catch(err => next(err) )
+// })
+
+router.get('/albums/current', function (req,res,next) {
+    Album.findAll({
+        where: {archive: true},
+        order: [ [ 'updatedAt', 'desc' ] ],
+        limit: 1
+    }).then(
+        album => {
+            return res.json(album)
+        }).catch(err => next(err) )
+})
+
 
 router.post('/albums', function (req,res,next) {
     Album.create(req.body).then( (data) => {
@@ -50,7 +72,7 @@ router.patch('/albums/:id', function(req, res, next){
     })
 })
 
-
+// for deletion
 router.delete('/albums/:id', function(req, res, next){
     Album.destroy({where: {id: req.params.id}}).then( rowsModified => {
         return res.send('ok')
@@ -59,5 +81,5 @@ router.delete('/albums/:id', function(req, res, next){
 
 
 
-
+// needed at bottom
 module.exports = router

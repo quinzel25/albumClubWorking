@@ -25,14 +25,17 @@ export default {
             return response.data
         })
     },
+    // unused
     getAlbum(id) {
         return axios.get('/api/albums/' + id).then(response => {
             return response.data
         })
     },
     getCurrentAlbum() {
-        // SELECT * FROM albums WHERE 'archive' = true AND MAX(updatedAt) to get an object that can be used as currentWeek obj
-
+        // SELECT * FROM albums WHERE archive=true ORDER BY updatedAt DESC LIMIT 1 to get an array with 1 object that can be used as currentWeek obj
+        return axios.get('api/albums/current').then(response => {
+            return response.data
+        })
     }
 
 

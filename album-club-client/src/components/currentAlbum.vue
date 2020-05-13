@@ -1,11 +1,12 @@
 <template>
-    <div id="current"  v-if="currentWeek">
+    <div id="current"  >
 
         <h2>This weeks album...</h2> <br>
-        <img v-bind:src="currentWeek.imgURL" height="300" width="300">
+        <img v-bind:src="currentWeek[0].imgURL" height="300" width="300">
         <br><br>
-        <b>{{ currentWeek.name }}</b> <br>
-        {{ currentWeek.artist }}
+        <a v-bind:href="currentWeek[0].openLink"> <b>{{ currentWeek[0].name }}</b> </a>
+        <br>
+        {{ currentWeek[0].artist }}
     </div>
 </template>
 
@@ -14,7 +15,7 @@
         name: "currentAlbum",
 
         props: {
-            currentWeek: Object
+            currentWeek: Array
         },
         methods: {
         }

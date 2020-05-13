@@ -30,8 +30,8 @@ module.exports = (sequelize, DataTypes) => {
     })
 
 
-    // TODO remember to change force: to false
-    Album.sync({force: true}).then( () => {
+
+    Album.sync({force: false}).then( () => {
         console.log('synced album table')
     })
 
